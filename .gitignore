@@ -3,3 +3,6 @@ Logs
 Packages/packages-lock.json
 Temp
 *.sln
+.idea
+obj
+*.csproj
