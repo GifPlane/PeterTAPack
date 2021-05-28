@@ -28,14 +28,11 @@ Shader "Hidden/PostProcessing/Uber"
         TEXTURE2D_SAMPLER2D(_MainTex, sampler_MainTex);
         float4 _MainTex_TexelSize;
 
-        // Auto exposure / eye adaptation
-        TEXTURE2D_SAMPLER2D(_AutoExposureTex, sampler_AutoExposureTex);
-
         // Bloom
         TEXTURE2D_SAMPLER2D(_BloomTex, sampler_BloomTex);
-        TEXTURE2D_SAMPLER2D(_Bloom_DirtTex, sampler_Bloom_DirtTex);
+        //TEXTURE2D_SAMPLER2D(_Bloom_DirtTex, sampler_Bloom_DirtTex);
         float4 _BloomTex_TexelSize;
-        float4 _Bloom_DirtTileOffset; // xy: tiling, zw: offset
+        //float4 _Bloom_DirtTileOffset; // xy: tiling, zw: offset
         half3 _Bloom_Settings; // x: sampleScale, y: intensity, z: dirt intensity
         half3 _Bloom_Color;
 
@@ -83,7 +80,6 @@ Shader "Hidden/PostProcessing/Uber"
             float2 uvStereoDistorted = Distort(i.texcoordStereo);
             //<<<
 
-            half autoExposure = SAMPLE_TEXTURE2D(_AutoExposureTex, sampler_AutoExposureTex, uv).r;
             half4 color = (0.0).xxxx;
 
             // Inspired by the method described in "Rendering Inside" [Playdead 2016]
@@ -143,8 +139,6 @@ Shader "Hidden/PostProcessing/Uber"
             }
             #endif
 
-            color.rgb *= autoExposure;
-
             #if BLOOM_LOW
             {
                 half4 bloom = UpsampleBox(TEXTURE2D_PARAM(_BloomTex, sampler_BloomTex), uvDistorted, _BloomTex_TexelSize.xy, _Bloom_Settings.x);
@@ -153,13 +147,15 @@ Shader "Hidden/PostProcessing/Uber"
                 // but considering we use a cover-style scale on the dirt texture the difference
                 // isn't massive so we chose to save a few ALUs here instead in case lens distortion
                 // is active
-                half4 dirt = half4(SAMPLE_TEXTURE2D(_Bloom_DirtTex, sampler_Bloom_DirtTex, uvDistorted * _Bloom_DirtTileOffset.xy + _Bloom_DirtTileOffset.zw).rgb, 0.0);
+                
+                // TODO: 移动端，不需要dirtTexture，此处将其去掉！
+                //half4 dirt = half4(SAMPLE_TEXTURE2D(_Bloom_DirtTex, sampler_Bloom_DirtTex, uvDistorted * _Bloom_DirtTileOffset.xy + _Bloom_DirtTileOffset.zw).rgb, 0.0);
 
                 // Additive bloom (artist friendly)
                 bloom *= _Bloom_Settings.y;
-                dirt *= _Bloom_Settings.z;
+                //dirt *= _Bloom_Settings.z;
                 color += bloom * half4(_Bloom_Color, 1.0);
-                color += dirt * bloom;
+                //color += dirt * bloom;
             }
             #endif
 

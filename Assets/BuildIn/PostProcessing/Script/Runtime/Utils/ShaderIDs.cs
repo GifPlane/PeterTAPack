@@ -76,7 +76,6 @@ namespace UnityEngine.Rendering.PostProcessing
         internal static readonly int CoCTex                          = Shader.PropertyToID("_CoCTex");
         internal static readonly int TaaParams                       = Shader.PropertyToID("_TaaParams");
 
-        internal static readonly int AutoExposureTex                 = Shader.PropertyToID("_AutoExposureTex");
         internal static readonly int HistogramBuffer                 = Shader.PropertyToID("_HistogramBuffer");
         internal static readonly int Params                          = Shader.PropertyToID("_Params");
         internal static readonly int ScaleOffsetRes                  = Shader.PropertyToID("_ScaleOffsetRes");
@@ -85,10 +84,10 @@ namespace UnityEngine.Rendering.PostProcessing
         internal static readonly int SampleScale                     = Shader.PropertyToID("_SampleScale");
         internal static readonly int Threshold                       = Shader.PropertyToID("_Threshold");
         internal static readonly int ColorIntensity                  = Shader.PropertyToID("_ColorIntensity");
-        internal static readonly int Bloom_DirtTex                   = Shader.PropertyToID("_Bloom_DirtTex");
+        //internal static readonly int Bloom_DirtTex                   = Shader.PropertyToID("_Bloom_DirtTex"); // TODO: 出于移动端，并不需要，暂时注释
         internal static readonly int Bloom_Settings                  = Shader.PropertyToID("_Bloom_Settings");
         internal static readonly int Bloom_Color                     = Shader.PropertyToID("_Bloom_Color");
-        internal static readonly int Bloom_DirtTileOffset            = Shader.PropertyToID("_Bloom_DirtTileOffset");
+        //internal static readonly int Bloom_DirtTileOffset            = Shader.PropertyToID("_Bloom_DirtTileOffset"); // TODO: 出于移动端，并不需要，暂时注释
 
         internal static readonly int ChromaticAberration_Amount      = Shader.PropertyToID("_ChromaticAberration_Amount");
         internal static readonly int ChromaticAberration_SpectralLut = Shader.PropertyToID("_ChromaticAberration_SpectralLut");

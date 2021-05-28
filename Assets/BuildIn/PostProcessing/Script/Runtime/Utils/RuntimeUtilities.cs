@@ -24,29 +24,6 @@ namespace UnityEngine.Rendering.PostProcessing
     {
         #region Textures
 
-        static Texture2D m_WhiteTexture;
-
-        /// <summary>
-        /// A 1x1 white texture.
-        /// </summary>
-        /// <remarks>
-        /// This texture is only created once and recycled afterward. You shouldn't modify it.
-        /// </remarks>
-        public static Texture2D whiteTexture
-        {
-            get
-            {
-                if (m_WhiteTexture == null)
-                {
-                    m_WhiteTexture = new Texture2D(1, 1, TextureFormat.ARGB4444, false) { name = "White Texture" };
-                    m_WhiteTexture.SetPixel(0, 0, Color.white);
-                    m_WhiteTexture.Apply();
-                }
-
-                return m_WhiteTexture;
-            }
-        }
-
         static Texture3D m_WhiteTexture3D;
 
         /// <summary>

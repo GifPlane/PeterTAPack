@@ -1060,7 +1060,6 @@ namespace UnityEngine.Rendering.PostProcessing
             uberSheet.ClearKeywords();
             uberSheet.properties.Clear();
             context.uberSheet = uberSheet;
-            context.autoExposureTexture = RuntimeUtilities.whiteTexture;
             context.bloomBufferNameID = -1;
 
             if (isFinalPass && context.stereoActive && context.stereoRenderingMode == PostProcessRenderContext.StereoRenderingMode.SinglePassInstanced)
@@ -1093,8 +1092,6 @@ namespace UnityEngine.Rendering.PostProcessing
             if (ShouldGenerateLogHistogram(context))
                 m_LogHistogram.Generate(context);
 
-            // Uber effects
-            uberSheet.properties.SetTexture(ShaderIDs.AutoExposureTex, context.autoExposureTexture);
 
             RenderEffect<Bloom>(context);
             RenderEffect<Vignette>(context);

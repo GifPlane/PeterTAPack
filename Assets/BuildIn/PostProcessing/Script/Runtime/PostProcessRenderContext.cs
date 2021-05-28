@@ -225,7 +225,6 @@ namespace UnityEngine.Rendering.PostProcessing
         // Internal values used for builtin effects
         // Beware, these may not have been set before a specific builtin effect has been executed
         internal PropertySheet uberSheet;
-        internal Texture autoExposureTexture;
         internal LogHistogram logHistogram;
         internal Texture logLut;
         internal int bloomBufferNameID;
@@ -269,7 +268,6 @@ namespace UnityEngine.Rendering.PostProcessing
             temporalAntialiasing = null;
 
             uberSheet = null;
-            autoExposureTexture = null;
             logLut = null;
             bloomBufferNameID = -1;
 

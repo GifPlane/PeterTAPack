@@ -136,9 +136,6 @@ namespace UnityEngine.Rendering.PostProcessing
 
             var sheet = context.propertySheets.Get(context.resources.shaders.bloom);
 
-            // Apply auto exposure adjustment in the prefiltering pass
-            sheet.properties.SetTexture(ShaderIDs.AutoExposureTex, context.autoExposureTexture);
-
             // Negative anamorphic ratio values distort vertically - positive is horizontal
             float ratio = Mathf.Clamp(settings.anamorphicRatio, -1, 1);
             float rw = ratio < 0 ? -ratio : 0f;
@@ -167,9 +164,7 @@ namespace UnityEngine.Rendering.PostProcessing
             float lclamp = Mathf.GammaToLinearSpace(settings.clamp.value);
             sheet.properties.SetVector(ShaderIDs.Params, new Vector4(lclamp, 0f, 0f, 0f));
 
-            int qualityOffset = 1;
-
-            // Downsample
+            // 下采样
             var lastDown = context.source;
             for (int i = 0; i < iterations; i++)
             {
@@ -189,7 +184,7 @@ namespace UnityEngine.Rendering.PostProcessing
                 th = Mathf.Max(th / 2, 1);
             }
 
-            // Upsample
+            // 上采样
             int lastUp = m_Pyramid[iterations - 1].down;
             for (int i = iterations - 2; i >= 0; i--)
             {
@@ -204,37 +199,46 @@ namespace UnityEngine.Rendering.PostProcessing
             float intensity = RuntimeUtilities.Exp2(settings.intensity.value / 10f) - 1f;
             var shaderSettings = new Vector4(sampleScale, intensity, settings.dirtIntensity.value, iterations);
 
-            // Lens dirtiness
-            // Keep the aspect ratio correct & center the dirt texture, we don't want it to be
-            // stretched or squashed
-            var dirtTexture = settings.dirtTexture.value == null
-                ? RuntimeUtilities.blackTexture
-                : settings.dirtTexture.value;
-
-            var dirtRatio = (float)dirtTexture.width / (float)dirtTexture.height;
-            var screenRatio = (float)context.screenWidth / (float)context.screenHeight;
-            var dirtTileOffset = new Vector4(1f, 1f, 0f, 0f);
-
-            if (dirtRatio > screenRatio)
-            {
-                dirtTileOffset.x = screenRatio / dirtRatio;
-                dirtTileOffset.z = (1f - dirtTileOffset.x) * 0.5f;
-            }
-            else if (screenRatio > dirtRatio)
-            {
-                dirtTileOffset.y = dirtRatio / screenRatio;
-                dirtTileOffset.w = (1f - dirtTileOffset.y) * 0.5f;
-            }
-
             // Shader properties
             var uberSheet = context.uberSheet;
             uberSheet.EnableKeyword("BLOOM_LOW");
-            uberSheet.properties.SetVector(ShaderIDs.Bloom_DirtTileOffset, dirtTileOffset);
             uberSheet.properties.SetVector(ShaderIDs.Bloom_Settings, shaderSettings);
             uberSheet.properties.SetColor(ShaderIDs.Bloom_Color, linearColor);
-            uberSheet.properties.SetTexture(ShaderIDs.Bloom_DirtTex, dirtTexture);
             cmd.SetGlobalTexture(ShaderIDs.BloomTex, lastUp);
 
+            
+            // Lens dirtiness
+            // 保持长宽比，并将dirt纹理放在中间，我们不希望它被拉长或压扁了。
+            // if (settings.dirtTexture.value != null)
+            // {
+            //     var dirtTexture = settings.dirtTexture.value;
+            //
+            //     var dirtRatio = (float)dirtTexture.width / (float)dirtTexture.height;
+            //     var screenRatio = (float)context.screenWidth / (float)context.screenHeight;
+            //     var dirtTileOffset = new Vector4(1f, 1f, 0f, 0f);
+            //
+            //     if (dirtRatio > screenRatio)
+            //     {
+            //         dirtTileOffset.x = screenRatio / dirtRatio;
+            //         dirtTileOffset.z = (1f - dirtTileOffset.x) * 0.5f;
+            //     }
+            //     else if (screenRatio > dirtRatio)
+            //     {
+            //         dirtTileOffset.y = dirtRatio / screenRatio;
+            //         dirtTileOffset.w = (1f - dirtTileOffset.y) * 0.5f;
+            //     }
+            //     uberSheet.properties.SetVector(ShaderIDs.Bloom_DirtTileOffset, dirtTileOffset);
+            //     uberSheet.properties.SetTexture(ShaderIDs.Bloom_DirtTex, dirtTexture);
+            // }
+            // else
+            // {
+            //     var dirtTexture = RuntimeUtilities.blackTexture;
+            //     var dirtTileOffset = new Vector4(1f, 1f, 0f, 0f);
+            //     uberSheet.properties.SetVector(ShaderIDs.Bloom_DirtTileOffset, dirtTileOffset);
+            //     uberSheet.properties.SetTexture(ShaderIDs.Bloom_DirtTex, dirtTexture);
+            // }
+            
+            
             // 释放临时RT
             for (int i = 0; i < iterations; i++)
             {
